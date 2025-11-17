@@ -14,7 +14,7 @@ function AIContentGenerator () {
   const [isGenerating, setIsGenerating] = useState(false);
   const [postContent, setPostContent] = useState('');
 
-  const genAI = new GoogleGenerativeAI(NEXT_PUBLIC_GEMINI_API_KEY);
+  const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
   const formattedPrompt = `Write a blog post about ${topic}. Make it engaging and informative.`;
   
   // LinkedIn details state
