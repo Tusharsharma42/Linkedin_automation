@@ -143,7 +143,7 @@ function AIContentGenerator () {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-purple-50 p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -168,7 +168,7 @@ function AIContentGenerator () {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
                       activeTab === tab.id
-                        ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md'
+                        ? 'bg-linear-to-r from-purple-500 to-indigo-600 text-white shadow-md'
                         : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
                     }`}
                   >
@@ -206,7 +206,7 @@ function AIContentGenerator () {
                   <button
                     onClick={getResponseForGivenPrompt}
                     disabled={isGenerating || !topic.trim()}
-                    className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-4 px-8 rounded-xl text-lg font-semibold hover:from-purple-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
+                    className="w-full bg-linear-to-r from-purple-500 to-indigo-600 text-white py-4 px-8 rounded-xl text-lg font-semibold hover:from-purple-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
                   >
                     {loading ? (
                       <>
@@ -462,7 +462,7 @@ function AIContentGenerator () {
                 <button
                 onClick={handleScheduleSubmit}
                 disabled={!scheduleData.postContent || !scheduleData.date || !scheduleData.time}
-                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 px-8 rounded-xl text-lg font-semibold hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
+                className="w-full bg-linear-to-r from-green-500 to-emerald-600 text-white py-4 px-8 rounded-xl text-lg font-semibold hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
                 >
                   <Send size={24} />
                   {scheduleData.isScheduled ? 'Reschedule Post' : 'Schedule Post'}
