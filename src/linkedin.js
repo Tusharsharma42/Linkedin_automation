@@ -1,3 +1,4 @@
+'use client';
 // src/app/api/services/linkedin.js
 import axios from "axios";
 import { getFirestore } from "firebase-admin/firestore";
