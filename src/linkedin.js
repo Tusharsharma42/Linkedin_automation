@@ -36,21 +36,29 @@ export default async function handler(req, res) {
       }
 
       try {
-        await axios.post(
-          "https://api.linkedin.com/v2/ugcPosts",
-          {
-            author: `urn:li:person:${user.linkedin_id}`,
-            lifecycleState: "PUBLISHED",
-            specificContent: {
-              "com.linkedin.ugc.ShareContent": {
-                shareCommentary: { text: user.post_content },
-                shareMediaCategory: "NONE",
-              },
-            },
-            visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+       await axios.post(
+        "https://api.linkedin.com/v2/ugcPosts",
+      {
+        author: `urn:li:person:${user.linkedinId}`,  // or organization
+        lifecycleState: "PUBLISHED",
+        specificContent: {
+          "com.linkedin.ugc.ShareContent": {
+        shareCommentary: { text: user.content },
+        shareMediaCategory: "NONE",
+        },
+      },
+        visibility: {
+        "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC",
+        },
+      },
+      {
+        headers: {
+        Authorization: `Bearer ${token}`,
+      "X-Restli-Protocol-Version": "2.0.0",
+  },
+    }
+  );
+
 
 
         await db.collection("users").doc(doc.id).update({ 
