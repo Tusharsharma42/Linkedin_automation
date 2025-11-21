@@ -36,7 +36,7 @@ export default async function handler(req, res) {
       }
 
       try {
-       await axios.post(
+        await axios.post(
         "https://api.linkedin.com/v2/ugcPosts",
       {
         author: `urn:li:person:${user.linkedinId}`,  // or organization
