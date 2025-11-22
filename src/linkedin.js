@@ -1,4 +1,3 @@
-'use client';
 // src/app/api/services/linkedin.js
 import axios from "axios";
 import { getFirestore } from "firebase-admin/firestore";
@@ -24,14 +23,12 @@ export default async function handler(req, res) {
 
     for (const doc of usersSnap.docs) {
       const user = doc.data();
-      const token = user.linkedin_access_token;
-
-      if (!token) {
+      if (!user.linkedInAccessToken) {
         console.log(`Skipping user ${doc.id} - no LinkedIn token`);
         continue;
       }
 
-      if (!user.post_content) {
+      if (!user.content) {
         console.log(`Skipping user ${doc.id} - no post content`);
         continue;
       }
@@ -40,7 +37,7 @@ export default async function handler(req, res) {
         await axios.post(
         "https://api.linkedin.com/v2/ugcPosts",
       {
-        author: `urn:li:person:${user.linkedinId}`,  // or organization
+        author: `urn:li:organization:${user.clientid}`,  // or organization
         lifecycleState: "PUBLISHED",
         specificContent: {
           "com.linkedin.ugc.ShareContent": {
@@ -54,12 +51,11 @@ export default async function handler(req, res) {
       },
       {
         headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${user.linkedInAccessToken}`,
       "X-Restli-Protocol-Version": "2.0.0",
   },
     }
   );
-
 
 
         await db.collection("users").doc(doc.id).update({ 
