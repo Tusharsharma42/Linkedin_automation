@@ -338,7 +338,7 @@ function AIContentGenerator () {
 
                 <div>
                   <label className="block text-gray-900 font-semibold mb-2">
-                    Company Page (Optional)
+                    Person id(Optional)
                   </label>
                   <input
                     type="text"
