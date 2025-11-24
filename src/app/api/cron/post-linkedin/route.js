@@ -69,18 +69,7 @@ export async function POST(req) {
                     }
                     authorUrn = `urn:li:organization:${postData.clientid}`;
                 } else {
-                    // For Personal Profiles, fetch the ID automatically
-                    try {
-                        const profileResponse = await axios.get('https://api.linkedin.com/v2/me', {
-                            headers: {
-                                'Authorization': `Bearer ${postData.linkedInAccessToken}`,
-                                'X-Restli-Protocol-Version': '2.0.0'
-                            }
-                        });
-                        authorUrn = `urn:li:person:${profileResponse.data.id}`;
-                    } catch (profileErr) {
-                        throw new Error(`Failed to fetch LinkedIn Profile ID: ${profileErr.response?.data?.message || profileErr.message}`);
-                    }
+                    authorUrn = `urn:li:person:${postData.clientid}`;
                 }
 
                 const postBody = {
