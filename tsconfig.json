@@ -21,14 +21,21 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   },
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "src/firebase.ts"  ],
+    "**/*.tsx",
+    "src/firebase.ts"
+  ],
   "exclude": [
     "node_modules"
   ]

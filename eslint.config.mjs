@@ -1,14 +1,7 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = 1;
-
-export default eslintConfig;
+// eslint.config.mjs
+export default {
+  // Extend the recommended Next.js ESLint rules
+  extends: ['next', 'next/core-web-vitals'],
+  // You can add custom rules here
+  rules: {}
+};

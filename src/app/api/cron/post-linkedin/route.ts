@@ -6,15 +6,23 @@ import axios from 'axios';
 // Initialize Firebase Admin if not already initialized
 if (!admin.apps.length) {
     try {
-        admin.initializeApp({
-            credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
-        });
+        const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
+            ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+            : undefined;
+
+        if (serviceAccount) {
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount),
+            });
+        } else {
+            console.error('FIREBASE_SERVICE_ACCOUNT environment variable is missing');
+        }
     } catch (error) {
         console.error('Firebase admin initialization error', error);
     }
 }
 
-export async function POST(req) {
+export async function POST() {
     try {
         const db = getFirestore();
         const now = new Date().toISOString();
@@ -32,7 +40,7 @@ export async function POST(req) {
 
         let successCount = 0;
         let errorCount = 0;
-        const results = [];
+        const results: any[] = [];
 
         for (const doc of postsSnap.docs) {
             const postData = doc.data();
@@ -71,22 +79,6 @@ export async function POST(req) {
                 } else {
                     authorUrn = `urn:li:person:${postData.clientid}`;
                 }
-
-                const postBody = {
-                    author: authorUrn,
-                    lifecycleState: 'PUBLISHED',
-                    specificContent: {
-                        'com.linkedin.ugc.ShareContent': {
-                            shareCommentary: {
-                                text: postData.content
-                            },
-                            shareMediaCategory: 'NONE'
-                        }
-                    },
-                    visibility: {
-                        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
-                    }
-                };
 
                 // Note: The /v2/posts API is the newer one, but /v2/ugcPosts is what was used.
                 // /v2/posts is for the "Posts API" (text, images, videos, etc).
@@ -150,7 +142,7 @@ export async function POST(req) {
                 results.push({ id: doc.id, status: 'success' });
                 console.log(`Successfully posted for ${doc.id}`);
 
-            } catch (err) {
+            } catch (err: any) {
                 errorCount++;
                 console.error(`Error posting for ${doc.id}:`, err.response?.data || err.message);
 
@@ -171,7 +163,7 @@ export async function POST(req) {
             results
         }, { status: 200 });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('API Route Error:', error);
         return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
     }
