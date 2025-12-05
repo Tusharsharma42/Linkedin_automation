@@ -8,14 +8,12 @@ import {
     Phone,
     MapPin,
 } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
 
 export default function Footer() {
     return (
         <footer className="bg-gray-900 text-gray-300">
             <div className="py-12 md:py-16 px-10">
-                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                     <div>
                         <h3 className="mb-4 text-2xl font-bold text-white">Rialytics</h3>
                         {/* <p className="mb-4">
@@ -80,26 +78,6 @@ export default function Footer() {
                                 <span>support@rialytics.com</span>
                             </li>
                         </ul>
-                    </div>
-
-                    <div>
-                        {/* <h3 className="mb-4 text-lg font-semibold text-white">
-              Newsletter
-            </h3> */}
-                        {/* <p className="mb-4">
-              Subscribe to our newsletter for the latest property listings and
-              real estate news.
-            </p> */}
-                        <div className="flex flex-col space-y-2">
-                            <Input
-                                type="email"
-                                placeholder="Your email address"
-                                className="bg-gray-800 border-gray-700 text-white"
-                            />
-                            <Button className="bg-teal-700 hover:bg-teal-600 cursor-pointer">
-                                Subscribe
-                            </Button>
-                        </div>
                     </div>
                 </div>
 
