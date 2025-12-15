@@ -17,8 +17,6 @@ import {
     Hash,
     Type,
     UserCircle,
-    History,
-    X,
     LucideIcon
 } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -45,19 +43,7 @@ interface StatusBadgeProps {
     status: 'ready' | 'pending' | 'error' | 'neutral' | string;
 }
 
-interface HistoryItem {
-    id: string;
-    topic: string;
-    content: string;
-    createdAt: string;
-}
 
-interface HistoryModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    history: HistoryItem[];
-    onSelect: (item: HistoryItem) => void;
-}
 
 interface LinkedinConfig {
     name: string;
@@ -90,7 +76,6 @@ interface GenerateViewProps {
     generatedContent: string;
     charCount: number;
     copyToClipboard: () => void;
-    onOpenHistory: () => void;
 }
 
 interface ConnectViewProps {
@@ -156,57 +141,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
     );
 };
 
-const HistoryModal: React.FC<HistoryModalProps> = ({ isOpen, onClose, history, onSelect }) => {
-    if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex justify-end transition-opacity">
-            <div className="w-full max-w-md bg-white h-full shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col">
-                <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-                    <div>
-                        <h3 className="font-bold text-slate-900 text-lg">History</h3>
-                        <p className="text-sm text-slate-500">Your recent generations</p>
-                    </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-500"
-                    >
-                        <X size={20} />
-                    </button>
-                </div>
-
-                <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                    {history.length === 0 ? (
-                        <div className="text-center py-12 text-slate-500">
-                            <History size={48} className="mx-auto mb-4 opacity-20" />
-                            <p>No history yet. Generate some content!</p>
-                        </div>
-                    ) : (
-                        history.map((item) => (
-                            <div
-                                key={item.id}
-                                onClick={() => onSelect(item)}
-                                className="group p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all bg-white"
-                            >
-                                <div className="flex justify-between items-start mb-2">
-                                    <h4 className="font-semibold text-slate-900 line-clamp-1 group-hover:text-emerald-600 transition-colors">
-                                        {item.topic}
-                                    </h4>
-                                    <span className="text-xs text-slate-400 whitespace-nowrap ml-2">
-                                        {new Date(item.createdAt).toLocaleDateString()}
-                                    </span>
-                                </div>
-                                <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
-                                    {item.content}
-                                </p>
-                            </div>
-                        ))
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
 
 // --- Sub-Views (Moved outside to prevent re-renders) ---
 
@@ -218,8 +153,7 @@ const GenerateView: React.FC<GenerateViewProps> = ({
     handleGenerate,
     generatedContent,
     charCount,
-    copyToClipboard,
-    onOpenHistory
+    copyToClipboard
 }) => (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
         <div className="flex items-center justify-between">
@@ -227,16 +161,7 @@ const GenerateView: React.FC<GenerateViewProps> = ({
                 <h2 className="text-2xl font-bold text-slate-900">Content Studio</h2>
                 <p className="text-slate-500">Generate professional content powered by AI</p>
             </div>
-            <div className="flex items-center gap-3">
-                <button
-                    onClick={onOpenHistory}
-                    className="flex items-center gap-2 text-slate-600 hover:text-emerald-600 font-medium text-sm px-3 py-1.5 rounded-lg hover:bg-emerald-50 transition-colors"
-                >
-                    <History size={16} />
-                    History
-                </button>
-                <StatusBadge status={steps.generated ? 'ready' : 'neutral'} />
-            </div>
+            <StatusBadge status={steps.generated ? 'ready' : 'neutral'} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -528,9 +453,7 @@ export default function ServicesPage() {
         scheduled: false
     });
 
-    // History State
-    const [showHistory, setShowHistory] = useState<boolean>(false);
-    const [history, setHistory] = useState<HistoryItem[]>([]);
+
 
     const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
 
@@ -551,31 +474,7 @@ export default function ServicesPage() {
         setNotification({ type, message });
     };
 
-    const fetchHistory = async () => {
-        try {
-            const q = query(
-                collection(db, 'contentHistory'),
-                orderBy('createdAt', 'desc'),
-                limit(20)
-            );
-            const querySnapshot = await getDocs(q);
-            const historyData = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            })) as HistoryItem[];
-            setHistory(historyData);
-        } catch (error) {
-            console.error("Error fetching history:", error);
-        }
-    };
 
-    const handleSelectHistory = (item: HistoryItem) => {
-        setTopic(item.topic);
-        setGeneratedContent(item.content);
-        setSteps(prev => ({ ...prev, generated: true }));
-        setShowHistory(false);
-        showNotify('success', 'Content loaded from history');
-    };
 
     const handleGenerate = async () => {
         if (!topic.trim()) return showNotify('error', 'Please enter a topic first');
@@ -595,15 +494,7 @@ export default function ServicesPage() {
             setGeneratedContent(text);
             setSteps(prev => ({ ...prev, generated: true }));
 
-            // Save to History
-            await addDoc(collection(db, 'contentHistory'), {
-                topic,
-                content: text,
-                createdAt: new Date().toISOString()
-            });
 
-            // Refresh history
-            fetchHistory();
 
             showNotify('success', 'Content generated successfully');
         } catch (error) {
@@ -749,19 +640,8 @@ export default function ServicesPage() {
                         generatedContent={generatedContent}
                         charCount={charCount}
                         copyToClipboard={copyToClipboard}
-                        onOpenHistory={() => {
-                            setShowHistory(true);
-                            fetchHistory();
-                        }}
                     />
                 )}
-
-                <HistoryModal
-                    isOpen={showHistory}
-                    onClose={() => setShowHistory(false)}
-                    history={history}
-                    onSelect={handleSelectHistory}
-                />
 
                 {activeView === 'connect' && (
                     <ConnectView
